@@ -1,0 +1,127 @@
+zabbix_export:
+  version: '5.2'
+  date: '2020-12-16T09:08:49Z'
+  groups:
+    -
+      name: Templates
+  templates:
+    -
+      template: 'Template - Weather - OpenWeatherMap.com'
+      name: 'Template - Weather - OpenWeatherMap.com'
+      groups:
+        -
+          name: Templates
+      items:
+        -
+          name: 'Current Feels Like'
+          type: DEPENDENT
+          key: 'weather[feels_like]'
+          delay: '0'
+          value_type: FLOAT
+          units: °F
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.body.main.feels_like
+          master_item:
+            key: 'weather[{$CITY},{$UNITS},{$APIKEY}]'
+        -
+          name: 'Current Humidity'
+          type: DEPENDENT
+          key: 'weather[humidity]'
+          delay: '0'
+          value_type: FLOAT
+          units: '%'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.body.main.humidity
+          master_item:
+            key: 'weather[{$CITY},{$UNITS},{$APIKEY}]'
+        -
+          name: 'Current Pressure'
+          type: DEPENDENT
+          key: 'weather[pressure]'
+          delay: '0'
+          value_type: FLOAT
+          units: mbar
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.body.main.pressure
+          master_item:
+            key: 'weather[{$CITY},{$UNITS},{$APIKEY}]'
+        -
+          name: 'Current Tempurature'
+          type: DEPENDENT
+          key: 'weather[temp]'
+          delay: '0'
+          value_type: FLOAT
+          units: °F
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.body.main.temp
+          master_item:
+            key: 'weather[{$CITY},{$UNITS},{$APIKEY}]'
+        -
+          name: 'Current Warmest Temp Today'
+          type: DEPENDENT
+          key: 'weather[temp_max]'
+          delay: '0'
+          value_type: FLOAT
+          units: °F
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.body.main.temp_max
+          master_item:
+            key: 'weather[{$CITY},{$UNITS},{$APIKEY}]'
+        -
+          name: 'Current Coldest Temp Today'
+          type: DEPENDENT
+          key: 'weather[temp_min]'
+          delay: '0'
+          value_type: FLOAT
+          units: °F
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.body.main.temp_min
+          master_item:
+            key: 'weather[{$CITY},{$UNITS},{$APIKEY}]'
+        -
+          name: 'JSON Weather Pull'
+          type: HTTP_AGENT
+          key: 'weather[{$CITY},{$UNITS},{$APIKEY}]'
+          delay: 5m
+          trends: '0'
+          value_type: TEXT
+          url: 'http://api.openweathermap.org/data/2.5/weather'
+          query_fields:
+            -
+              name: q
+              value: '{$CITY}'
+            -
+              name: units
+              value: '{$UNITS}'
+            -
+              name: appid
+              value: '{$APIKEY}'
+          output_format: JSON
+      macros:
+        -
+          macro: '{$APIKEY}'
+          value: YOURKEYHERE
+        -
+          macro: '{$CITY}'
+          value: Bardonia
+        -
+          macro: '{$UNITS}'
+          value: imperial
